@@ -8,6 +8,7 @@ public class ZoneManager : MonoBehaviour {
 
 	public GameObject myGameManager;
 	public EnvironmentManager myEnvironmentManager;
+	public GameObject myEnemyManager;
 	public Projector blobProjection;			// shadow projector
 	public GameObject safeZone;					// safe zone trigger
 
@@ -26,22 +27,28 @@ public class ZoneManager : MonoBehaviour {
 	public float ShrinkRate = 0.5f;				// Shrink rate modifier
 
 
-	public bool atBeginning;
+	//public bool atBeginning;
+	public bool executeEnemyIntro;
 	public float rateOfColorChange;
 	float blend = 1f;
 
 	public Color fogColorDark;
 	public Color fogColorLight;
+	//public Color groundColorDark;
+	//public Color groundColorLight;
+	//public GameObject[] groundTiles;
 
 	void Start () {
 		debugmessage = GameObject.Find("OrbCount").GetComponent<Text>();
 		safeZoneMinSize = safeZone.transform.localScale;					// set minimum size of safe zone collider trigger
 
 		blobProjection.orthographicSize = 225;			// enshroud everything in darkness
-		//safeZone.transform.localScale = new Vector3 (225, 225, 225);
-		RenderSettings.skybox.SetFloat("_Blend", blend);
-		RenderSettings.fogColor = fogColorDark;
-		atBeginning = true;
+
+		//RenderSettings.skybox.SetFloat("_Blend", blend);
+		//RenderSettings.fogColor = fogColorDark;
+
+		//atBeginning = true;
+		//executeEnemyIntro = false;
 		//RenderSettings.skybox.SetColor("_TintColor", new Color(0,0,0,1));
 	}
 
@@ -49,12 +56,27 @@ public class ZoneManager : MonoBehaviour {
 		debugmessage.text = "Counter: " + myGameManager.GetComponent<OrbManager>().OrbCount;
 
 		// If the safe zone should increase, Lerp the growth of the safe zone
-		if (atBeginning) {
-			if (myGameManager.GetComponent<OrbManager>().OrbCount == 1) {
-				StartCoroutine(LerpBlobSizeBig());
-				RenderSettings.fogColor = fogColorLight;
+		/*if (atBeginning) {
+
+			groundTiles = GameObject.FindGameObjectsWithTag("groundTiles");
+			foreach (GameObject tile in groundTiles) {
+				tile.GetComponent<Renderer>().material.color = groundColorDark;
+			}
+
+			if (executeEnemyIntro) {
+				myEnemyManager.GetComponent<EnemyBehaviour>().SpawnEnemyIntro();
 				atBeginning = false;
 			}
+			else {
+				if (myGameManager.GetComponent<OrbManager>().OrbCount == 1) {
+					//StartCoroutine(LerpBlobSizeBig());
+					RenderSettings.fogColor = fogColorLight;
+					foreach (GameObject tile in groundTiles) {
+						tile.GetComponent<Renderer>().material.color = groundColorLight;
+					}
+				}
+			}
+
 		}
 		else {
 			if (increaseSize) {
@@ -70,7 +92,27 @@ public class ZoneManager : MonoBehaviour {
 				safeZoneSizeOld = safeZone.transform.localScale;
 				safeZone.transform.localScale = Vector3.Lerp(safeZoneSizeOld, safeZoneMinSize, Time.deltaTime*ShrinkRate);
 			}
+		}*/
+		if (!(myEnvironmentManager.GetComponent<EnvironmentManager>().atBeginning)) {
+			if (increaseSize) {
+				StartCoroutine(LerpBlobSize());
+				Debug.Log("OrthoSize: " + blobProjection.orthographicSize);
+			}
+			// Constantly shrink the safe zone, to a minimum size
+			else {
+				shrinkOldSize = blobProjection.orthographicSize;
+				blobProjection.orthographicSize = Mathf.Lerp(shrinkOldSize, shrinkMinSize, Time.deltaTime*ShrinkRate);
+
+				safeZoneSizeOld = safeZone.transform.localScale;
+				safeZone.transform.localScale = Vector3.Lerp(safeZoneSizeOld, safeZoneMinSize, Time.deltaTime*ShrinkRate);
+			}
 		}
+	}
+
+	public void ChangeTheWorldIntro() {
+		myGameManager.GetComponent<OrbManager>().OrbCount++;
+		audio_Orb.Play();
+		StartCoroutine(LerpBlobSizeBig());
 	}
 
 	// Called by an OrbTrigger
@@ -104,8 +146,9 @@ public class ZoneManager : MonoBehaviour {
 		myGameManager.GetComponent<OrbManager>().SpawnOrb();
      }
 
+    // Big lerp for shrinking the blob at the beginning of the game
 	private IEnumerator LerpBlobSizeBig() {
-		increaseSize = false;
+		Debug.Log("Trying to Lerp big blob");
 		float elapsedTime = 0;
 		float oldSize = blobProjection.orthographicSize;
 		float newSize = 2.0f;
@@ -125,11 +168,12 @@ public class ZoneManager : MonoBehaviour {
 
 			elapsedTime += Time.deltaTime;
 
-
         	yield return new WaitForEndOfFrame();
      	}
 		// Spawn new orb at random position
-		//myEnvironmentManager.GetComponent<EnvironmentManager>().SpawnOrb();
 		myGameManager.GetComponent<OrbManager>().SpawnOrb();
+		myEnemyManager.GetComponent<EnemyBehaviour>().canSpawnEnemy = true;
+		myEnvironmentManager.GetComponent<EnvironmentManager>().executeEnemyIntro = true;
+		//executeEnemyIntro = true;
      }
 }

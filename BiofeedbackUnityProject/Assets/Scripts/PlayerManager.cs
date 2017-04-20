@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour {
 
 	public GameObject myPlayer;
-	public GameObject EnemyManagerObj;
+	public GameObject myEnemyManager;
 	public Camera myMainCamera;
 	public GameObject mySoundEffects;
 	public GameObject MoonObject;
@@ -46,7 +46,7 @@ public class PlayerManager : MonoBehaviour {
 		if (other.name == "SafeZoneCollider" && !isSafe) {
 			myMainCamera.GetComponentInChildren<CameraFlash>().StartFlashDark();
 			soundEnterSafeZone.Play();
-			EnemyManagerObj.GetComponent<EnemyBehaviour>().DespawnEnemy();
+			myEnemyManager.GetComponent<EnemyBehaviour>().DespawnEnemy();
 			isSafe = true;
 		}
 	}
@@ -54,8 +54,8 @@ public class PlayerManager : MonoBehaviour {
 	void OnTriggerExit(Collider other){
 		//Debug.Log("Other collider: "+other.name);
 		// if player exits the safe zone, spawn the enemy
-    	if(other.gameObject.name == "SafeZoneCollider" && isSafe){
-			EnemyManagerObj.GetComponent<EnemyBehaviour>().SpawnEnemy();
+    	if(other.gameObject.name == "SafeZoneCollider" && isSafe && myEnemyManager.GetComponent<EnemyBehaviour>().canSpawnEnemy){
+			myEnemyManager.GetComponent<EnemyBehaviour>().SpawnEnemy();
 			isSafe = false;
     	}
 	}

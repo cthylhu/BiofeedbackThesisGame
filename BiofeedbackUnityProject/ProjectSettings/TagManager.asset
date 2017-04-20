@@ -9,6 +9,8 @@ TagManager:
   - houseBase
   - Player1
   - Enemy
+  - groundTiles
+  - EnemyIntro
   layers:
   - Default
   - TransparentFX

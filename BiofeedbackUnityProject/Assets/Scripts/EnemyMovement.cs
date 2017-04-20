@@ -40,11 +40,18 @@ public class EnemyMovement : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 		//Debug.Log("Enemy trigger enter: "+other.name);
-		/*if (other.name == "actor_player") {
+		if (other.name == "actor_player") {
 			Debug.Log("Player is caught!");
 			GameObject.Find("Main Camera").GetComponentInChildren<CameraFlash>().StartFlashDark();
 			GameObject.Find("PlayerControl").GetComponent<PlayerManager>().PlayerReset();
-		}*/
+			if (gameObject.tag == "EnemyIntro"){
+				//Destroy(gameObject);
+				GameObject[] IntroEnemies = GameObject.FindGameObjectsWithTag("EnemyIntro");
+				foreach (GameObject e in IntroEnemies) {
+					Destroy(e);
+				}
+			}
+		}
 		if (other.name == "SafeZoneCollider"){
 			Debug.Log("Enemy collide with safe zone");
 			if (myGameManager.GetComponent<OrbManager>().OrbCount >= myGameManager.GetComponent<OrbManager>().OrbCountCaptureTarget) {
@@ -54,5 +61,6 @@ public class EnemyMovement : MonoBehaviour {
 				Destroy(this);
 			}
 		}
+
 	}
 }

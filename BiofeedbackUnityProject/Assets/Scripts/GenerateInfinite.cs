@@ -23,7 +23,7 @@ public class GenerateInfinite : MonoBehaviour {
 
 	Hashtable tiles = new Hashtable();
 
-	void Start () {
+	void Awake () {
 		this.gameObject.transform.position = Vector3.zero;
 		startPos = Vector3.zero;
 

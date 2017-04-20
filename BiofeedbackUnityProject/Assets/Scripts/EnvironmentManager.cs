@@ -6,13 +6,14 @@ using System.Collections.Generic;
 
 public class EnvironmentManager : MonoBehaviour {
 	public GameObject myGameManager;
+	public GameObject myEnemyManager;
 	public GameObject noTreeSpawnArea;
 	//public GameObject IomPanelData;
 
 	public GameObject TreePrefab;
 	public GameObject TerrainPrefab;
 	public List<GameObject> TreeObjList = new List<GameObject>();
-	List<GameObject> TerrainObjList = new List<GameObject>();
+	//List<GameObject> TerrainObjList = new List<GameObject>();
 	public GameObject MoonObject;
 
 	public int treeDensity;
@@ -26,22 +27,63 @@ public class EnvironmentManager : MonoBehaviour {
 	public float terrainUpTime = 1;
 	public float morphRate;
 
-	//public GameObject orbPrefab;
-	//float spawnOrbHeight = 5f;
-	//public float minPosition = -20f;
-	//public float maxPosition = 20f;
+	float blend = 1f;
+	public Color fogColorDark;
+	public Color fogColorLight;
+	public Color groundColorDark;
+	public Color groundColorLight;
+	public GameObject[] groundTiles;
 
-	public float SCLthreshold;
+	public bool atBeginning;
+	public bool executeEnemyIntro;
+
+	void Awake() {
+		RenderSettings.skybox.SetFloat("_Blend", blend);
+		RenderSettings.fogColor = fogColorDark;
+	}
 
 	void Start () {
+		atBeginning = true;
+		executeEnemyIntro = false;
+
 		useScaling = true;
 		for (int i=0; i<treeDensity; i++) {
 			ProcedurallyGenerateStuff(TreeObjList, TreePrefab, 0f, instantiatedScaleFactor);
 		}
 		useScaling = false;
+
+		groundTiles = GameObject.FindGameObjectsWithTag("groundTiles");
+		foreach (GameObject tile in groundTiles) {
+			tile.GetComponent<Renderer>().material.color = groundColorDark;
+		}
 		/*for (int j=0; j<rockDensity; j++) {
 			ProcedurallyGenerateStuff(TerrainObjList, TerrainPrefab, -2.5f, 1);
 		}*/
+
+	}
+
+	void Update () {
+		// If the safe zone should increase, Lerp the growth of the safe zone
+		if (atBeginning) {
+
+			if (executeEnemyIntro) {
+				myEnemyManager.GetComponent<EnemyBehaviour>().SpawnEnemyIntro();
+				atBeginning = false;
+				executeEnemyIntro = false;
+			}
+			else {
+				if (myGameManager.GetComponent<OrbManager>().OrbCount == 1) {
+					//StartCoroutine(LerpBlobSizeBig());
+					Debug.Log("Changing ground and fog");
+					RenderSettings.fogColor = fogColorLight;
+					GameObject[] currentGroundTiles = GameObject.FindGameObjectsWithTag("groundTiles");
+					foreach (GameObject t in currentGroundTiles) {
+						t.GetComponent<Renderer>().material.color = groundColorLight;
+					}
+				}
+			}
+
+		}
 
 	}
 

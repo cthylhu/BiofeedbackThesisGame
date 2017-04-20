@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 1, g: 0.47058827, b: 0.3529412, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.02
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
@@ -497,7 +497,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myPlayer: {fileID: 53474623}
-  EnemyManagerObj: {fileID: 1381239824}
+  myEnemyManager: {fileID: 1381239824}
   myMainCamera: {fileID: 1516596863}
   mySoundEffects: {fileID: 1486480805}
   MoonObject: {fileID: 1582113809}
@@ -2108,6 +2108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myGameManager: {fileID: 183098904}
   myEnvironmentManager: {fileID: 1075528182}
+  myEnemyManager: {fileID: 1381239824}
   blobProjection: {fileID: 1686911774}
   safeZone: {fileID: 1188804835}
   debugmessage: {fileID: 902196332}
@@ -2117,9 +2118,9 @@ MonoBehaviour:
   growthTime: 5
   shrinkMinSize: 2
   ShrinkRate: 0.05
-  atBeginning: 0
+  executeEnemyIntro: 0
   rateOfColorChange: 5
-  fogColorDark: {r: 0.043137256, g: 0.27450982, b: 0.37647063, a: 0}
+  fogColorDark: {r: 0.050980397, g: 0.3019608, b: 0.40784317, a: 0}
   fogColorLight: {r: 1, g: 0.47058827, b: 0.3529412, a: 1}
 --- !u!1 &187378749
 GameObject:
@@ -2698,7 +2699,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Press any key to start
+  m_Text: 'Press any key to start
+
+'
 --- !u!222 &293624479
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3307,7 +3310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IomPanelData: {fileID: 1275756197}
   rainEmitter: {fileID: 1120001242}
-  rainSound: {fileID: 0}
+  rainSound: {fileID: 1120001246}
   SCLthreshold: 2
   musicFadeSpeed: 0.35
 --- !u!4 &428527305
@@ -3790,9 +3793,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 498392546}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88bd536029e94794ea633e0e568f85e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 69d343ffa47063a4683143007d1fcb3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myGameManager: {fileID: 183098904}
 --- !u!135 &498392548
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3831,7 +3835,7 @@ Transform:
   m_PrefabInternal: {fileID: 564057201}
   m_GameObject: {fileID: 498392546}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 5.75}
+  m_LocalPosition: {x: 0, y: 1, z: 10.8}
   m_LocalScale: {x: 5.8289776, y: 5.828982, z: 5.828982}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -4122,7 +4126,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 444106, guid: 7d23376a1c8e6aa4fb4dd052f7b00fc7, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 5.75
+      value: 10.8
       objectReference: {fileID: 0}
     - target: {fileID: 444106, guid: 7d23376a1c8e6aa4fb4dd052f7b00fc7, type: 2}
       propertyPath: m_LocalRotation.x
@@ -5465,7 +5469,7 @@ MonoBehaviour:
   myGameManager: {fileID: 0}
   myPlayer: {fileID: 53474623}
   EnemyPrefab: {fileID: 0}
-  myOrbManager: {fileID: 0}
+  EnemyIntroPrefab: {fileID: 0}
   EnemyCapturedCount: 0
   minPosition: -20
   maxPosition: 20
@@ -5474,6 +5478,7 @@ MonoBehaviour:
   noSpawnMax: 10
   EnemySpeed: 0
   IomSCLdata: 0
+  canSpawnEnemy: 0
   EnemyList: []
 --- !u!114 &714633089
 MonoBehaviour:
@@ -6218,7 +6223,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.34
+  m_Radius: 0.67
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -7386,6 +7391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myGameManager: {fileID: 183098904}
+  myEnemyManager: {fileID: 1381239824}
   noTreeSpawnArea: {fileID: 873693910}
   TreePrefab: {fileID: 190716, guid: 46cddd1d899a9d545aceb01f7726e3be, type: 2}
   TerrainPrefab: {fileID: 103104, guid: df518187cdd0def48b1c82b959e6f089, type: 2}
@@ -7400,7 +7406,13 @@ MonoBehaviour:
   noSpawnMax: 6
   terrainUpTime: 1
   morphRate: 1
-  SCLthreshold: 0
+  fogColorDark: {r: 0.043137256, g: 0.27450982, b: 0.3764706, a: 0}
+  fogColorLight: {r: 1, g: 0.47058824, b: 0.3529412, a: 1}
+  groundColorDark: {r: 0.07058824, g: 0.121568635, b: 0.14117648, a: 0}
+  groundColorLight: {r: 1, g: 0.7411765, b: 0.6666667, a: 0}
+  groundTiles: []
+  atBeginning: 0
+  executeEnemyIntro: 0
 --- !u!114 &1075528183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7674,7 +7686,7 @@ ParticleSystem:
   moveWithTransform: 1
   autoRandomSeed: 1
   scalingMode: 1
-  randomSeed: 1011326427
+  randomSeed: 567941957
   InitialModule:
     serializedVersion: 2
     enabled: 1
@@ -9400,11 +9412,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 2176d81e6411c924f8217792c2bdc5b3, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 78255e55d0f94e746841ca8c0899c707, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.56
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   Priority: 128
@@ -11257,7 +11269,8 @@ MonoBehaviour:
   myPlayer: {fileID: 53474623}
   EnemyPrefab: {fileID: 1000013409319772, guid: 262cfa1578323cc4da4e41bad3253283,
     type: 2}
-  myOrbManager: {fileID: 0}
+  EnemyIntroPrefab: {fileID: 1000010834823446, guid: a3627a750d09746408d3a42f5463c206,
+    type: 2}
   EnemyCapturedCount: 0
   minPosition: -20
   maxPosition: 20
@@ -11266,6 +11279,7 @@ MonoBehaviour:
   noSpawnMax: 10
   EnemySpeed: 0
   IomSCLdata: 0
+  canSpawnEnemy: 0
   EnemyList: []
 --- !u!4 &1381239826
 Transform:
@@ -12271,6 +12285,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2b03b43eeec6c46baabae601a80d00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isFadingOut: 0
+  fadeTexture: {fileID: 0}
+  fadeSpeed: 0.2
+  drawDepth: -1000
 --- !u!4 &1516596858
 Transform:
   m_ObjectHideFlags: 0
@@ -14548,7 +14566,7 @@ ParticleSystem:
   moveWithTransform: 1
   autoRandomSeed: 1
   scalingMode: 1
-  randomSeed: -660770164
+  randomSeed: -539415006
   InitialModule:
     serializedVersion: 2
     enabled: 1
@@ -14711,7 +14729,7 @@ ParticleSystem:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.10980392, g: 0.07058824, b: 0.24313726, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       minMaxState: 0
     startSize:
       scalar: 1
@@ -16304,7 +16322,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1916370704}
-  - 114: {fileID: 1916370705}
   m_Layer: 12
   m_Name: SafeZone
   m_TagString: Untagged
@@ -16327,32 +16344,6 @@ Transform:
   - {fileID: 1971837884}
   m_Father: {fileID: 183098905}
   m_RootOrder: 1
---- !u!114 &1916370705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1916370703}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ae62856562ae7848b3ffca40664eca2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myGameManager: {fileID: 0}
-  myEnvironmentManager: {fileID: 1075528182}
-  blobProjection: {fileID: 1686911774}
-  safeZone: {fileID: 1188804835}
-  debugmessage: {fileID: 902196332}
-  OrbCount: 0
-  OrbThreshold: 3
-  audio_Orb: {fileID: 1486480806}
-  growthTime: 5
-  shrinkMinSize: 2
-  ShrinkRate: 0.05
-  atBeginning: 0
-  rateOfColorChange: 5
-  fogColorDark: {r: 0.043137256, g: 0.27450982, b: 0.37647063, a: 0}
-  fogColorLight: {r: 1, g: 0.47058827, b: 0.3529412, a: 1}
 --- !u!1 &1952045664
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ public class OrbTrigger : MonoBehaviour {
 			GameObject.Find("GameManagerObj").GetComponent<ZoneManager>().IncreaseBlobSize();
 			Destroy(gameObject); 
 		}
-	}
 
+	}
 
 }

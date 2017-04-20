@@ -6,8 +6,7 @@ public class EnemyBehaviour : MonoBehaviour {
 	public GameObject myGameManager;
 	public GameObject myPlayer;
 	public GameObject EnemyPrefab;
-	public OrbManager myOrbManager;
-	//public ZoneManager myZoneManager;
+	public GameObject EnemyIntroPrefab;
 
 	public int EnemyCapturedCount = 0;
 
@@ -19,6 +18,8 @@ public class EnemyBehaviour : MonoBehaviour {
 	public double EnemySpeed;
 	public double IomSCLdata;
 
+	public bool canSpawnEnemy = false;
+
 	//public int OrbCountCaptureTarget = 3;
 
 	Renderer[] enemyModelParts;
@@ -26,7 +27,6 @@ public class EnemyBehaviour : MonoBehaviour {
 	public List<GameObject> EnemyList = new List<GameObject>();
 
 	void Start () {
-		myOrbManager = myGameManager.GetComponent<OrbManager>();
 		//enemyModelParts = EnemyActor.GetComponentsInChildren<Renderer>();
 		//DespawnEnemy();
 		//SpawnEnemy();
@@ -36,13 +36,17 @@ public class EnemyBehaviour : MonoBehaviour {
 		// Control Enemy speed
 		IomSCLdata = GameObject.Find("IomPanel").GetComponent<IomSensorsAutoOn>().sclData;
 		EnemySpeed = IomSCLdata *10d;
-		if (myOrbManager.OrbCount >= myOrbManager.OrbCountCaptureTarget) {
+		if (myGameManager.GetComponent<OrbManager>().OrbCount >= myGameManager.GetComponent<OrbManager>().OrbCountCaptureTarget) {
 			if (EnemyList.Count != 0) {
 				changeEnemyColor();	
 			}
 			myGameManager.GetComponent<ZoneManager>().ShrinkRate = 0;
 			GameObject.Find("dark_field_particles").GetComponent<ParticleSystem>().startColor = new Color(1,0,0,1);
 		}	
+
+		if (Input.GetKeyDown(KeyCode.G)) {
+			SpawnEnemyIntro();
+		}
 	}
 
 	void ResetEnemySpeed() {
@@ -60,10 +64,31 @@ public class EnemyBehaviour : MonoBehaviour {
 
 	public void DespawnEnemy() {
 		foreach (GameObject m in EnemyList){
-			Destroy (m);
+			EnemyList.Remove(m);
+			Destroy(m);
 		}
 	}
 
+	public void SpawnEnemyIntro() {
+		List<GameObject> enemies = new List<GameObject>();
+		Vector3 enemyPosition1 = new Vector3(myPlayer.transform.position.x + 10, myPlayer.transform.position.y, myPlayer.transform.position.z);
+		Vector3 enemyPosition2 = new Vector3(myPlayer.transform.position.x - 10, myPlayer.transform.position.y, myPlayer.transform.position.z);
+		Vector3 enemyPosition3 = new Vector3(myPlayer.transform.position.x, myPlayer.transform.position.y, myPlayer.transform.position.z + 10);
+		Vector3 enemyPosition4 = new Vector3(myPlayer.transform.position.x, myPlayer.transform.position.y, myPlayer.transform.position.z - 10);
+
+		GameObject newEnemy1 = (GameObject)Instantiate(EnemyIntroPrefab, enemyPosition1, Quaternion.identity);
+		enemies.Add(newEnemy1);
+		GameObject newEnemy2 = (GameObject)Instantiate(EnemyIntroPrefab, enemyPosition2, Quaternion.identity);
+		enemies.Add(newEnemy2);
+		GameObject newEnemy3 = (GameObject)Instantiate(EnemyIntroPrefab, enemyPosition3, Quaternion.identity);
+		enemies.Add(newEnemy3);
+		GameObject newEnemy4 = (GameObject)Instantiate(EnemyIntroPrefab, enemyPosition4, Quaternion.identity);
+		enemies.Add(newEnemy4);
+
+		foreach (GameObject e in enemies) {
+			e.GetComponent<EnemyMovement>().moveSpeed = 1.5f;
+		}
+	}
 	/*public void SpawnEnemy() {
 		Debug.Log("Spawning Enemy!");
 		Vector3 spawnNewPosition = new Vector3(Random.Range(minPosition,maxPosition), spawnHeight, Random.Range(minPosition,maxPosition));
